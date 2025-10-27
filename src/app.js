@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import responseTimeLogger from './middleware/responseTime.middleware.js'
+import { ApiError } from './utils/ApiError.js';
 
 const app = express();
 
@@ -37,5 +38,25 @@ app.use("/api/v1/likes", likeRouter)
 app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
 
+// Global error handler middleware
+app.use((err, req, res, next) => {
+    // If it's already an ApiError, use its properties
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            message: err.message,
+            data: null,
+            errors: err.errors || []
+        });
+    }
+    
+    // For unexpected errors, return a generic error response
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        data: null,
+        errors: []
+    });
+});
 
 export { app } 

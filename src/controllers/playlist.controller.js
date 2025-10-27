@@ -130,7 +130,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Error in adding video to playlist" });
+        throw new ApiError(500, error?.message || "Error in adding video to playlist");
     }
 });
 

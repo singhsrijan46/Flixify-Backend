@@ -63,10 +63,7 @@ const publishVideo = asyncHandler(async (req, res) => {
         )
 
     } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong while publishing video"
-        })
+        throw new ApiError(500, "Something went wrong while publishing video")
     }
 });
 
@@ -165,10 +162,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong while fetching video"
-        })
+        throw new ApiError(500, "Something went wrong while fetching video")
     }
 });
 
@@ -225,11 +219,7 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong while updating video"
-        })
-
+        throw new ApiError(500, "Something went wrong while updating video")
     }
 
 });
@@ -265,10 +255,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
         )
 
     } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong while deleting video"
-        })
+        throw new ApiError(500, "Something went wrong while deleting video")
     }
 });
 
@@ -296,10 +283,7 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         )
 
     } catch (error) {
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong while toggling publish status"
-        })
+        throw new ApiError(500, "Something went wrong while toggling publish status")
     }
 });
 

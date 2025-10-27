@@ -107,7 +107,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
             throw new ApiError(400, "Tweet not found")
         }
         const user = await User.findById(req.user?._id);
-        if (user) {
+        if (!user) {
             throw new ApiError(400, "User not found")
         }
 
