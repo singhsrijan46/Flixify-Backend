@@ -5,12 +5,13 @@ A robust, production-ready backend for a video hosting platform similar to YouTu
 ## Features
 
 - **User Authentication**: JWT-based authentication with access/refresh tokens
+- **Comprehensive Input Validation**: Email format, password strength, username format validation with sanitization
 - **Video Management**: Upload, stream, update, and delete videos with Cloudinary integration
 - **Social Features**: Comments, likes, subscriptions, and playlists
 - **Tweet System**: Twitter-like functionality for user engagement
 - **Dashboard Analytics**: Channel statistics and video management
 - **File Upload**: Secure file handling with Multer middleware
-- **Security**: Password hashing with bcrypt, CORS protection
+- **Security**: Password hashing with bcrypt, CORS protection, XSS prevention, SQL injection protection
 - **Database**: MongoDB with Mongoose ODM and aggregation pipelines
 
 ## Tech Stack
@@ -22,6 +23,7 @@ A robust, production-ready backend for a video hosting platform similar to YouTu
 - **File Storage**: Cloudinary
 - **Security**: bcrypt for password hashing
 - **File Upload**: Multer
+- **Validation**: express-validator for input validation and sanitization
 - **Development**: Nodemon for hot reloading
 
 ## Project Structure
@@ -182,6 +184,27 @@ src/
    ```
 
 The server will start on `http://localhost:8000`
+
+## Input Validation & Security
+
+### User Registration Validation
+- **Email**: Valid format, max 100 characters, normalized
+- **Password**: 8-128 characters, must contain uppercase, lowercase, number, and special character
+- **Username**: 3-30 characters, alphanumeric + underscores only, cannot start/end with underscore
+- **Full Name**: 2-50 characters, letters and spaces only
+- **Sanitization**: All inputs are sanitized to prevent XSS and injection attacks
+
+### Validation Features
+- Comprehensive input validation using express-validator
+- Real-time validation error messages
+- Input sanitization and normalization
+- Password strength requirements
+- Email format validation
+- Username format restrictions
+- SQL injection prevention
+- XSS attack prevention
+
+For detailed validation documentation, see [API_VALIDATION_DOCUMENTATION.md](./API_VALIDATION_DOCUMENTATION.md)
 
 ## Contributing
 
