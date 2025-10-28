@@ -35,7 +35,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // Steps -> 
     // get user details from frontend
-    // validation - not empty
+    // validation - comprehensive input validation with sanitization
     // check if user already exists: username, email
     // check for images, check for avatar
     // upload them to cloudinary, avatar
@@ -44,10 +44,10 @@ const registerUser = asyncHandler(async (req, res) => {
     // check for user creation
     // return res
 
-
     const { fullName, email, username, password } = req.body
     //console.log("email: ", email);
 
+    // Basic validation is now handled by middleware, but keeping as fallback
     if (
         [fullName, email, username, password].some((field) => field?.trim() === "")
     ) {
@@ -109,7 +109,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
     // req body -> data
-    // username or email
+    // username or email (validation handled by middleware)
     //find the user
     //password check
     //access and referesh token
@@ -118,8 +118,9 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body
     // console.log(email);
 
+    // Validation is now handled by middleware, but keeping as fallback
     if (!username && !email) {
-        throw new ApiError(400, "helolo username or email is required")
+        throw new ApiError(400, "Username or email is required")
     }
 
     // Here is an alternative of above code based on logic discussed in video:
@@ -247,11 +248,21 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
 
+    // Validation is handled by middleware, but keeping basic checks as fallback
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, "Both old and new passwords are required")
+    }
+
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Invalid old password")
+    }
+
+    // Check if new password is different from old password
+    if (oldPassword === newPassword) {
+        throw new ApiError(400, "New password must be different from old password")
     }
 
     user.password = newPassword
@@ -272,16 +283,29 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { fullName, email } = req.body
 
-    if (!fullName || !email) {
-        throw new ApiError(400, "All fields are required")
+    // Validation is handled by middleware, but keeping basic checks as fallback
+    if (!fullName && !email) {
+        throw new ApiError(400, "At least one field (fullName or email) is required")
+    }
+
+    // Check if email already exists for another user
+    if (email) {
+        const existingUser = await User.findOne({ 
+            email: email, 
+            _id: { $ne: req.user?._id } 
+        });
+        
+        if (existingUser) {
+            throw new ApiError(409, "Email is already in use by another user");
+        }
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                fullName,
-                email: email
+                ...(fullName && { fullName }),
+                ...(email && { email: email })
             }
         },
         { new: true }
